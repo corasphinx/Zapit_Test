@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:tony_flutter/service/ably_service.dart';
+
+GetIt getIt = GetIt.instance;
 
 void main() {
+  getIt.registerSingletonAsync<AblyService>(() => AblyService.init());
   runApp(const MyApp());
 }
 
@@ -11,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Tony Robin Test',
       theme: ThemeData(
         // This is the theme of your application.
         //
