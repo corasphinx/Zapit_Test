@@ -53,6 +53,15 @@ class AblyService {
   /// 2. Read connection status
   final ably.Realtime _realtime;
 
+  /// to get the connection status of the realtime instance
+  /// The different connection statuses are:
+  /// [initialized, connecting, connected]
+  /// [disconnected, suspended, closing, closed, failed, update]
+  /// It's necessary to check for the connection status and make sure
+  /// the user knows what's happening in case of failure.
+  Stream<ably.ConnectionStateChange> get connection =>
+      _realtime.connection.on();
+
   /// This is private constructor, as this class should only be initialized
   /// through the init() method, on the service registration at startup.
   ///
