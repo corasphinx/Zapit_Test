@@ -45,6 +45,11 @@ dependencies:
   # The most popular internationalization package for Flutter, will use it for dates formatting.
   intl: ^0.16.1
 
+  localstore:
+    git:
+      url: https://github.com/chuyentt/localstore.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

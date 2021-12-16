@@ -7,6 +7,7 @@ GetIt getIt = GetIt.instance;
 
 void main() {
   getIt.registerSingletonAsync<AblyService>(() => AblyService.init());
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

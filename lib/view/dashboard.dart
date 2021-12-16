@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
@@ -71,7 +70,15 @@ class _GraphsListState extends State<GraphsList> {
               ),
             );
           } else if (snapshot.data!.event == ably.ConnectionEvent.failed) {
-            return Center(child: Text("No connection."));
+            return // Center(child: Text("No connection."));
+                SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (CoinUpdates update in prices)
+                    CoinGraphItem(coinUpdates: update),
+                ],
+              ),
+            );
           } else {
             return CircularProgressIndicator();
           }

@@ -1,6 +1,7 @@
 import 'package:tony_flutter/config.dart';
 import 'package:ably_flutter_plugin/ably_flutter_plugin.dart' as ably;
 import 'package:flutter/foundation.dart';
+import 'package:localstore/localstore.dart';
 
 const List<Map> _coinTypes = [
   {
@@ -27,6 +28,34 @@ class Coin {
     required this.price,
     required this.dateTime,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'code': code,
+      'price': price,
+      'dateTime': dateTime.millisecondsSinceEpoch,
+    };
+  }
+
+  factory Coin.fromMap(Map<String, dynamic> map) {
+    return Coin(
+      code: map['code'],
+      price: map['title'],
+      dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime']),
+    );
+  }
+}
+
+extension ExtCoin on Coin {
+  Future save() async {
+    final _db = Localstore.instance;
+    return _db.collection('coins').doc(code).set(toMap());
+  }
+
+  Future delete() async {
+    final _db = Localstore.instance;
+    return _db.collection('coins').doc(code).delete();
+  }
 }
 
 class CoinUpdates extends ChangeNotifier {
@@ -97,6 +126,8 @@ class AblyService {
 
   List<CoinUpdates> _coinUpdates = [];
 
+  final _db = Localstore.instance;
+
   /// Start listening to cryptocurrency prices from Coindesk hub and return
   /// a list of `CoinUpdates` for each currency.
   ///
@@ -128,8 +159,28 @@ class AblyService {
               dateTime: message.timestamp,
             ),
           );
+
+          // Save to localstore
+          final item = Coin(
+            code: coinCode,
+            price: double.parse('${message.data}'),
+            dateTime: message.timestamp,
+          );
+          item.save();
         });
       }
+    }
+
+    // if disconnected, read data from localstore
+    if (ably.ConnectionState.disconnected ==
+        ably.ConnectionEvent.disconnected) {
+      _db.collection('coins').stream.listen((event) {
+        int i = 0;
+        final update = Coin.fromMap(event);
+        _coinUpdates[i].updateCoin(Coin(
+            code: update.code, price: update.price, dateTime: update.dateTime));
+        i++;
+      });
     }
     return _coinUpdates;
   }
