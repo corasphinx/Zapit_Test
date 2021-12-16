@@ -53,6 +53,8 @@ class AblyService {
   /// 2. Read connection status
   final ably.Realtime _realtime;
 
+  late ably.RealtimeChannel _chatChannel;
+
   /// to get the connection status of the realtime instance
   /// The different connection statuses are:
   /// [initialized, connecting, connected]
